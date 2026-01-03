@@ -2,7 +2,8 @@ import { Heart, MapPin, Wifi, Share2 } from 'lucide-react'
 import type { Job } from '../../types/job'
 import { useJobsStore } from '../../store/jobsStore'
 import { formatPostedTime } from '../../utils/times'
-import MatchRing from './MatchRing' // keep your existing ring
+import MatchRing from './MatchRing'
+import { useNavigate } from 'react-router-dom'
 
 type Props = {
   job: Job
@@ -11,9 +12,26 @@ type Props = {
 export default function JobCard({ job }: Props) {
   const liked = useJobsStore((s) => s.liked)
   const toggleLike = useJobsStore((s) => s.toggleLike)
+  const navigate = useNavigate()
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => navigate(`/jobs/${job.id}`)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          navigate(`/jobs/${job.id}`)
+        }
+      }}
+      className="
+        bg-white rounded-xl border border-gray-200
+        cursor-pointer
+        hover:shadow-sm
+        transition
+      "
+    >
       {/* Top content */}
       <div className="px-6 pt-5 pb-4">
         <div className="flex items-start justify-between gap-4">
@@ -25,11 +43,9 @@ export default function JobCard({ job }: Props) {
 
             {/* Main text */}
             <div className="min-w-0">
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="text-[20px] leading-[26px] font-semibold text-gray-900 truncate">
-                  {job.title}
-                </h3>
-              </div>
+              <h3 className="text-[20px] leading-[26px] font-semibold text-gray-900 truncate">
+                {job.title}
+              </h3>
 
               {/* Company */}
               <div className="mt-2 flex items-center gap-2 min-w-0">
@@ -85,6 +101,10 @@ export default function JobCard({ job }: Props) {
           <div className="flex items-center gap-2 pt-1 shrink-0">
             <button
               type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                // share logic later
+              }}
               className="p-2 rounded-full hover:bg-gray-100 transition"
               aria-label="Share"
             >
@@ -93,13 +113,16 @@ export default function JobCard({ job }: Props) {
 
             <button
               type="button"
-              onClick={() => toggleLike(job.id)}
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleLike(job.id)
+              }}
               className="p-2 rounded-full hover:bg-gray-100 transition"
               aria-label="Like"
             >
               <Heart
                 className={[
-                  'w-6 h-6 transition-colors', // slightly bigger like you requested
+                  'w-6 h-6 transition-colors',
                   liked[job.id]
                     ? 'fill-[#A68BFA] stroke-[#A68BFA]'
                     : 'fill-none stroke-gray-400',
@@ -116,7 +139,6 @@ export default function JobCard({ job }: Props) {
       {/* Footer */}
       <div className="px-6 py-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 text-[13px] text-gray-600">
-          {/* time pill */}
           <span className="px-3 py-1 rounded-full bg-[#734AE2]/10 text-gray-700">
             {formatPostedTime(job.postedAt)}
           </span>
@@ -125,6 +147,10 @@ export default function JobCard({ job }: Props) {
 
         <div className="flex items-center gap-3">
           <button
+            onClick={(e) => {
+              e.stopPropagation()
+              // apply logic
+            }}
             className="
               h-10 px-5
               rounded-full
@@ -138,6 +164,10 @@ export default function JobCard({ job }: Props) {
           </button>
 
           <button
+            onClick={(e) => {
+              e.stopPropagation()
+              // mock interview logic
+            }}
             className="
               h-10 px-6
               rounded-full
